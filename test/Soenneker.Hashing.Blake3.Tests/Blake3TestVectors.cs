@@ -9,7 +9,7 @@ internal static class Blake3TestVectors
     public static byte[] GetTestInput(int length)
     {
         var buf = new byte[length];
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
             buf[i] = (byte)(i % 251);
         return buf;
     }

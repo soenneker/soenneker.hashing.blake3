@@ -4,7 +4,7 @@
 
 # ![](https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png) Soenneker.Hashing.Blake3
 
-A high-performance, dependency-free .NET library for **BLAKE3** hashing and constant-time verification. Pure C# with optional SIMD acceleration (AVX2 on x64, NEON on ARM).
+A high-performance .NET library for **BLAKE3** hashing and constant-time verification. Pure C# with optional SIMD acceleration (AVX2 on x64, NEON on ARM).
 
 ## Features
 
@@ -15,6 +15,7 @@ A high-performance, dependency-free .NET library for **BLAKE3** hashing and cons
 - **Span/Memory-friendly** — hashing from `byte[]`, `ReadOnlySpan<byte>`, `ReadOnlyMemory<byte>`, and in-place digest writing.
 - **Strings** — hash UTF-8 strings and get hex output via `Hash(string)` and `HashToString(string)`.
 - **Constant-time verification** — `Verify` uses `CryptographicOperations.FixedTimeEquals` for digest comparison.
+- **Blake3Util** — optional DI-registered utility for **file and directory** hashing (hash single files, whole directories, or an aggregate hash of a directory).
 
 ## Installation
 
@@ -29,14 +30,14 @@ using Soenneker.Hashing.Blake3;
 
 // Hash bytes → 32-byte digest
 byte[] data = System.Text.Encoding.UTF8.GetBytes("hello world");
-byte[] hash = Blake3Util.Hash(data);
+byte[] hash = Blake3Hasher.Hash(data);
 
 // Hash string (UTF-8) → hex
-string hex = Blake3Util.HashToString("hello world");
+string hex = Blake3Hasher.HashToString("hello world");
 // e.g. "d74981efa70a0c0b14d123f472c6e570..."
 
 // Verify digest (constant-time)
-bool ok = Blake3Util.Verify(data, hash);
+bool ok = Blake3Hasher.Verify(data, hash);
 ```
 
 ## Usage
@@ -67,6 +68,19 @@ For large buffers, use the parallel API to spread work across cores and use SIMD
 | `HashParallelCopy(ReadOnlySpan<byte> input)` | Copies input then runs parallel hash (use when you only have a span of a large buffer). |
 
 Parallelism kicks in when the input is large enough to form multiple chunks (e.g. &gt; 4 KiB). For smaller inputs, the regular `Hash` methods are usually faster.
+
+### Blake3Util (file and directory hashing)
+
+For file-based workflows, register `Blake3Util` (e.g. via `Blake3UtilRegistrar`) and inject `IBlake3Util`. It can hash individual files, entire directories, or produce a single aggregate hash for a directory (useful for integrity checks of a folder’s contents).
+
+| Method | Description |
+|--------|-------------|
+| `HashFile(path)` | Hash a file and return its BLAKE3 digest as a 64-character hex string. |
+| `HashFileToByteArray(path)` | Hash a file and return the 32-byte digest. |
+| `HashDirectory(path)` | Hash every file in a directory (recursive); returns a dictionary of file path → 32-byte digest. |
+| `HashDirectoryToAggregateString(path)` | Hash all files in a directory (sorted by path), combine path + hash per file, then BLAKE3 the aggregate; returns a single 64-character hex string for the whole directory. |
+
+All methods are async and accept an optional `CancellationToken`. Files that cannot be read (e.g. access denied) are skipped when hashing directories.
 
 ### Verification
 

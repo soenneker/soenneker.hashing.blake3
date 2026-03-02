@@ -8,7 +8,7 @@ namespace Soenneker.Hashing.Blake3;
 /// <summary>
 /// BLAKE3 verification: compare hash of input to an expected digest (constant-time).
 /// </summary>
-public static partial class Blake3Util
+public static partial class Blake3Hasher
 {
     /// <summary>
     /// Returns true if the BLAKE3 hash of <paramref name="input"/> equals <paramref name="expectedHash"/> (constant-time comparison).

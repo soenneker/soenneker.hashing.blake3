@@ -1,9 +1,10 @@
+using System;
 using BenchmarkDotNet.Attributes;
+using Blake3;
 using SharpHash.Base;
 using SharpHash.Interfaces;
-using Soenneker.Hashing.Blake3;
-using System;
-using Blake3;
+
+namespace Soenneker.Hashing.Blake3.Tests.Benchmarks;
 
 [MemoryDiagnoser]
 [SimpleJob]
@@ -35,7 +36,7 @@ public class Blake3HashBenchmark
     [BenchmarkCategory("NoAlloc")]
     public void Soenneker_NoAlloc()
     {
-        Blake3Util.Hash(_data, _digest); // (you may need to add this overload)
+        Blake3Hasher.Hash(_data, _digest); // (you may need to add this overload)
     }
 
     [Benchmark]
@@ -50,7 +51,7 @@ public class Blake3HashBenchmark
     [BenchmarkCategory("NoAlloc")]
     public void Blake3Managed_NoAlloc()
     {
-        Blake3.Managed.Hash hash = Blake3.Managed.Hasher.Hash(_data);
+        global::Blake3.Managed.Hash hash = global::Blake3.Managed.Hasher.Hash(_data);
         hash.AsSpan().CopyTo(_digest);
     }
 
@@ -68,22 +69,22 @@ public class Blake3HashBenchmark
     // Allocating convenience APIs
     // -------------------
 
-   // [Benchmark]
+    // [Benchmark]
     [BenchmarkCategory("Alloc")]
     public byte[] Soenneker_Alloc()
-        => Blake3Util.Hash(_data);
+        => Blake3Hasher.Hash(_data);
 
     //[Benchmark]
     [BenchmarkCategory("Alloc")]
     public byte[] Blake3Net_Alloc()
         => Hasher.Hash(_data).AsSpan().ToArray();
 
-   // [Benchmark]
+    // [Benchmark]
     [BenchmarkCategory("Alloc")]
     public byte[] Blake3Managed_Alloc()
-        => Blake3.Managed.Hasher.Hash(_data).AsSpan().ToArray();
+        => global::Blake3.Managed.Hasher.Hash(_data).AsSpan().ToArray();
 
- //   [Benchmark]
+    //   [Benchmark]
     [BenchmarkCategory("Alloc")]
     public byte[] SharpHash_Alloc()
     {
