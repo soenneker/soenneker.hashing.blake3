@@ -24,7 +24,7 @@
         <PackageReference Include="Blake3" Version="2.2.0" />
         <PackageReference Include="Blake3.Managed" Version="1.1.0" />
         <PackageReference Include="SharpHash" Version="1.2.0" />
-        <PackageReference Include="Soenneker.Facts.Local" Version="4.0.577" />
+        <PackageReference Include="Soenneker.Facts.Local" Version="4.0.580" />
         <PackageReference Include="Soenneker.Tests.Benchmark" Version="4.0.63" />
         <PackageReference Include="Soenneker.Utils.Test" Version="4.0.304" />
         <PackageReference Include="Soenneker.Tests.FixturedUnit" Version="4.0.2215" />
