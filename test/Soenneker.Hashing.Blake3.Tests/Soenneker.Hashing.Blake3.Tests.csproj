@@ -33,7 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Soenneker.Hashing.Blake3.csproj" />
+        <ProjectReference Include="..\..\src\Soenneker.Hashing.Blake3\Soenneker.Hashing.Blake3.csproj" />
     </ItemGroup>
 
     <ItemGroup>
