@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Blake3" Version="2.2.0" />
+        <PackageReference Include="Blake3" Version="2.2.1" />
         <PackageReference Include="Blake3.Managed" Version="1.1.0" />
         <PackageReference Include="SharpHash" Version="1.2.0" />
         <PackageReference Include="Soenneker.Facts.Local" Version="4.0.603" />
