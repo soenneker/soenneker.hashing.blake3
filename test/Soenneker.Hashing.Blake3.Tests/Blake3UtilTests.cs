@@ -1,18 +1,17 @@
 using System;
 using AwesomeAssertions;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.Hashing.Blake3.Tests;
 
-[Collection("Collection")]
-public sealed class Blake3UtilTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public sealed class Blake3UtilTests : HostedUnitTest
 {
-    public Blake3UtilTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public Blake3UtilTests(Host host) : base(host)
     {
     }
 
-    [Fact]
+    [Test]
     public void Hash_empty_bytes_returns_32_bytes()
     {
         byte[] result = Blake3Hasher.Hash(ReadOnlySpan<byte>.Empty);
@@ -23,7 +22,7 @@ public sealed class Blake3UtilTests : FixturedUnitTest
               .HaveCount(32);
     }
 
-    [Fact]
+    [Test]
     public void Hash_empty_bytes_produces_non_zero_digest()
     {
         byte[] result = Blake3Hasher.Hash(ReadOnlySpan<byte>.Empty);
@@ -36,7 +35,7 @@ public sealed class Blake3UtilTests : FixturedUnitTest
               .NotBeEquivalentTo(new byte[32]);
     }
 
-    [Fact]
+    [Test]
     public void Hash_empty_string_equals_hash_empty_bytes()
     {
         byte[] fromString = Blake3Hasher.Hash("");
@@ -46,7 +45,7 @@ public sealed class Blake3UtilTests : FixturedUnitTest
                   .BeEquivalentTo(fromBytes);
     }
 
-    [Fact]
+    [Test]
     public void Hash_string_abc_equals_hash_utf8_bytes_abc()
     {
         byte[] fromString = Blake3Hasher.Hash("abc");
@@ -61,7 +60,7 @@ public sealed class Blake3UtilTests : FixturedUnitTest
                  .BeEquivalentTo(fromString);
     }
 
-    [Fact]
+    [Test]
     public void Hash_is_deterministic()
     {
         byte[] input = [1, 2, 3, 4, 5];
@@ -72,7 +71,7 @@ public sealed class Blake3UtilTests : FixturedUnitTest
              .BeEquivalentTo(second);
     }
 
-    [Fact]
+    [Test]
     public void Hash_different_inputs_produce_different_hashes()
     {
         byte[] a = Blake3Hasher.Hash([1, 2, 3]);
@@ -82,7 +81,7 @@ public sealed class Blake3UtilTests : FixturedUnitTest
          .NotBeEquivalentTo(b);
     }
 
-    [Fact]
+    [Test]
     public void HashParallel_small_input_matches_Hash()
     {
         byte[] input = [10, 20, 30, 40, 50];
@@ -93,7 +92,7 @@ public sealed class Blake3UtilTests : FixturedUnitTest
                 .BeEquivalentTo(fromParallel);
     }
 
-    [Fact]
+    [Test]
     public void HashParallel_empty_matches_Hash_empty()
     {
         byte[] fromHash = Blake3Hasher.Hash(ReadOnlySpan<byte>.Empty);
@@ -103,7 +102,7 @@ public sealed class Blake3UtilTests : FixturedUnitTest
                 .BeEquivalentTo(fromParallel);
     }
 
-    [Fact]
+    [Test]
     public void HashParallelCopy_matches_Hash_for_same_input()
     {
         byte[] input = [7, 8, 9, 10];
@@ -114,7 +113,7 @@ public sealed class Blake3UtilTests : FixturedUnitTest
                 .BeEquivalentTo(fromParallelCopy);
     }
 
-    [Fact]
+    [Test]
     public void Hash_utf8_string_produces_32_byte_hash()
     {
         byte[] result = Blake3Hasher.Hash("Hello, 世界");
@@ -125,7 +124,7 @@ public sealed class Blake3UtilTests : FixturedUnitTest
               .HaveCount(32);
     }
 
-    [Fact]
+    [Test]
     public void Hash_span_char_matches_string_overload()
     {
         const string s = "test";
@@ -136,8 +135,7 @@ public sealed class Blake3UtilTests : FixturedUnitTest
                   .BeEquivalentTo(fromSpan);
     }
 
-
-    [Fact]
+    [Test]
     public void HashToString_does_not_throw()
     {
         const string s = "test";

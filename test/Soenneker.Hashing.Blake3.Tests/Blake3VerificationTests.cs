@@ -2,7 +2,6 @@ using System;
 using AwesomeAssertions;
 using SharpHash.Base;
 using SharpHash.Interfaces;
-using Xunit;
 
 namespace Soenneker.Hashing.Blake3.Tests;
 
@@ -15,7 +14,7 @@ public sealed class Blake3VerificationTests
         return bytes;
     }
 
-    [Fact]
+    [Test]
     public void Soenneker_matches_Blake3Net()
     {
         byte[] input = GetInput();
@@ -24,7 +23,7 @@ public sealed class Blake3VerificationTests
         a.Should().BeEquivalentTo(b);
     }
 
-    [Fact]
+    [Test]
     public void Soenneker_matches_Blake3Managed()
     {
         byte[] input = GetInput();
@@ -33,7 +32,7 @@ public sealed class Blake3VerificationTests
         a.Should().BeEquivalentTo(b);
     }
 
-    [Fact]
+    [Test]
     public void Soenneker_matches_SharpHash()
     {
         byte[] input = GetInput();
@@ -42,7 +41,7 @@ public sealed class Blake3VerificationTests
         a.Should().BeEquivalentTo(b);
     }
 
-    [Fact]
+    [Test]
     public void Blake3Net_matches_Blake3Managed()
     {
         byte[] input = GetInput();
@@ -51,7 +50,7 @@ public sealed class Blake3VerificationTests
         a.Should().BeEquivalentTo(b);
     }
 
-    [Fact]
+    [Test]
     public void Blake3Net_matches_SharpHash()
     {
         byte[] input = GetInput();
@@ -60,7 +59,7 @@ public sealed class Blake3VerificationTests
         a.Should().BeEquivalentTo(b);
     }
 
-    [Fact]
+    [Test]
     public void Blake3Managed_matches_SharpHash()
     {
         byte[] input = GetInput();
@@ -69,7 +68,7 @@ public sealed class Blake3VerificationTests
         a.Should().BeEquivalentTo(b);
     }
 
-    [Fact]
+    [Test]
     public void Hash_empty_matches_Blake3_NuGet()
     {
         byte[] input = Array.Empty<byte>();
@@ -80,7 +79,7 @@ public sealed class Blake3VerificationTests
         ours.Should().BeEquivalentTo(other);
     }
 
-    [Fact]
+    [Test]
     public void Hash_empty_matches_Blake3_Managed()
     {
         byte[] input = Array.Empty<byte>();
@@ -91,7 +90,7 @@ public sealed class Blake3VerificationTests
         ours.Should().BeEquivalentTo(other);
     }
 
-    [Fact]
+    [Test]
     public void Hash_abc_bytes_matches_Blake3_NuGet()
     {
         byte[] input = "abc"u8.ToArray();
@@ -101,7 +100,7 @@ public sealed class Blake3VerificationTests
         ours.Should().BeEquivalentTo(other);
     }
 
-    [Fact]
+    [Test]
     public void Hash_abc_bytes_matches_Blake3_Managed()
     {
         byte[] input = "abc"u8.ToArray();
@@ -111,7 +110,7 @@ public sealed class Blake3VerificationTests
         ours.Should().BeEquivalentTo(other);
     }
 
-    [Fact]
+    [Test]
     public void Hash_arbitrary_bytes_matches_Blake3_NuGet()
     {
         byte[] input = [1, 2, 3, 4, 5, 100, 200, 250];
@@ -121,7 +120,7 @@ public sealed class Blake3VerificationTests
         ours.Should().BeEquivalentTo(other);
     }
 
-    [Fact]
+    [Test]
     public void Hash_arbitrary_bytes_matches_Blake3_Managed()
     {
         byte[] input = [1, 2, 3, 4, 5, 100, 200, 250];
@@ -131,7 +130,7 @@ public sealed class Blake3VerificationTests
         ours.Should().BeEquivalentTo(other);
     }
 
-    [Fact]
+    [Test]
     public void Hash_1024_bytes_matches_Blake3_NuGet()
     {
         byte[] input = Blake3TestVectors.GetTestInput(1024);
@@ -141,7 +140,7 @@ public sealed class Blake3VerificationTests
         ours.Should().BeEquivalentTo(other);
     }
 
-    [Fact]
+    [Test]
     public void Hash_1024_bytes_matches_Blake3_Managed()
     {
         byte[] input = Blake3TestVectors.GetTestInput(1024);
@@ -151,7 +150,7 @@ public sealed class Blake3VerificationTests
         ours.Should().BeEquivalentTo(other);
     }
 
-    [Fact]
+    [Test]
     public void HashParallel_same_input_matches_Blake3_NuGet()
     {
         byte[] input = Blake3TestVectors.GetTestInput(2048);
@@ -163,7 +162,7 @@ public sealed class Blake3VerificationTests
 
     // --- Official BLAKE3 test vectors (BLAKE3-team/BLAKE3 test_vectors.json) ---
 
-    [Fact]
+    [Test]
     public void Hash_empty_matches_official_test_vector()
     {
         byte[] expected = Convert.FromHexString("af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262");
@@ -173,7 +172,7 @@ public sealed class Blake3VerificationTests
         actual.Should().BeEquivalentTo(expected);
     }
 
-    [Fact]
+    [Test]
     public void Hash_test_vector_len_3_matches_official()
     {
         byte[] expected = Convert.FromHexString("e1be4d7a8ab5560aa4199eea339849ba8e293d55ca0a81006726d184519e647f");
@@ -183,7 +182,7 @@ public sealed class Blake3VerificationTests
         actual.Should().BeEquivalentTo(expected);
     }
 
-    [Fact]
+    [Test]
     public void Hash_test_vector_len_64_matches_official()
     {
         byte[] expected = Convert.FromHexString("4eed7141ea4a5cd4b788606bd23f46e212af9cacebacdc7d1f4c6dc7f2511b98");
@@ -193,7 +192,7 @@ public sealed class Blake3VerificationTests
         actual.Should().BeEquivalentTo(expected);
     }
 
-    [Fact]
+    [Test]
     public void Hash_test_vector_len_1024_matches_official()
     {
         byte[] expected = Convert.FromHexString("42214739f095a406f3fc83deb889744ac00df831c10daa55189b5d121c855af7");
