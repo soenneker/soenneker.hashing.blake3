@@ -30,5 +30,11 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\Soenneker.Hashing.Blake3\Soenneker.Hashing.Blake3.csproj" />
     </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Benchmarks\**\*.cs" />
+    <Compile Remove="Benchmarking\**\*.cs" />
+  </ItemGroup>
 </Project>
+
+
 
