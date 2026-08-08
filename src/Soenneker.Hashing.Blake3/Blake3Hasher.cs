@@ -131,7 +131,7 @@ public static partial class Blake3Hasher
     /// <param name="input">The data to hash.</param>
     /// <returns>A 32-byte array containing the BLAKE3 hash.</returns>
     [Pure]
-    public static byte[] HashParallelCopy(ReadOnlySpan<byte> input) => Hash(input.ToArray());
+    public static byte[] HashParallelCopy(ReadOnlySpan<byte> input) => Hash(input);
 
     /// <summary>
     /// Computes the BLAKE3 hash of the string encoded as UTF-8 and returns a 32-byte digest.

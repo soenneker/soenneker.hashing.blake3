@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -42,10 +43,18 @@ public sealed class Blake3Util : IBlake3Util
         if (path.IsNullOrWhiteSpace())
             throw new ArgumentNullException(nameof(path));
 
-        byte[] content = await _fileUtil.ReadToBytes(path, false, cancellationToken)
-                                        .NoSync();
+        var result = new byte[32];
+        byte[] buffer = ArrayPool<byte>.Shared.Rent(64 * 1024);
 
-        return Blake3Hasher.Hash(content);
+        try
+        {
+            await HashFile(path, result, buffer, cancellationToken).NoSync();
+            return result;
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer);
+        }
     }
 
     public async ValueTask<Dictionary<string, byte[]>> HashDirectory(string path, CancellationToken cancellationToken = default)
@@ -100,31 +109,71 @@ public sealed class Blake3Util : IBlake3Util
         if (files.Count == 0)
             return string.Empty;
 
-        using MemoryStream aggregateStream = await _memoryStreamUtil.Get(cancellationToken)
-                                                                    .NoSync();
+        using var aggregateHasher = new Blake3Hasher.Incremental();
+        byte[] readBuffer = ArrayPool<byte>.Shared.Rent(64 * 1024);
+        var fileHash = new byte[32];
 
-        foreach (string filePath in files)
+        try
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            try
+            foreach (string filePath in files)
             {
-                byte[] fileHash = await HashFileToByteArray(filePath, cancellationToken)
-                    .NoSync();
-                string relativePath = Path.GetRelativePath(path, filePath);
-                byte[] pathBytes = Encoding.UTF8.GetBytes(relativePath);
+                cancellationToken.ThrowIfCancellationRequested();
 
-                aggregateStream.Write(pathBytes, 0, pathBytes.Length);
-                aggregateStream.Write(fileHash, 0, fileHash.Length);
-            }
-            catch (Exception)
-            {
-                // Skip files that cannot be read (e.g. access denied)
+                try
+                {
+                    await HashFile(filePath, fileHash, readBuffer, cancellationToken).NoSync();
+                    AppendUtf8(aggregateHasher, Path.GetRelativePath(path, filePath));
+                    aggregateHasher.Append(fileHash);
+                }
+                catch (Exception) when (!cancellationToken.IsCancellationRequested)
+                {
+                    // Skip files that cannot be read (e.g. access denied)
+                }
             }
         }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(readBuffer);
+        }
 
-        byte[] aggregateInput = aggregateStream.ToArray();
-        byte[] aggregateHash = Blake3Hasher.Hash(aggregateInput);
+        byte[] aggregateHash = aggregateHasher.FinalizeHash();
         return aggregateHash.ToHexLower();
+    }
+
+    private async ValueTask HashFile(string path, Memory<byte> destination, byte[] buffer, CancellationToken cancellationToken)
+    {
+        await using FileStream stream = _fileUtil.OpenRead(path, log: false);
+        using var hasher = new Blake3Hasher.Incremental();
+
+        while (true)
+        {
+            int read = await stream.ReadAsync(buffer, cancellationToken).NoSync();
+            if (read == 0)
+                break;
+
+            hasher.Append(buffer.AsSpan(0, read));
+        }
+
+        hasher.FinalizeHash(destination.Span);
+    }
+
+    private static void AppendUtf8(Blake3Hasher.Incremental hasher, string value)
+    {
+        int byteCount = Encoding.UTF8.GetByteCount(value);
+        byte[]? rented = null;
+        Span<byte> bytes = byteCount <= 512
+            ? stackalloc byte[byteCount]
+            : (rented = ArrayPool<byte>.Shared.Rent(byteCount)).AsSpan(0, byteCount);
+
+        try
+        {
+            Encoding.UTF8.GetBytes(value, bytes);
+            hasher.Append(bytes);
+        }
+        finally
+        {
+            if (rented is not null)
+                ArrayPool<byte>.Shared.Return(rented);
+        }
     }
 }

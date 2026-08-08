@@ -7,6 +7,29 @@ namespace Soenneker.Hashing.Blake3.Tests;
 
 public sealed class Blake3VerificationTests
 {
+    [Test]
+    public void Incremental_matches_one_shot_across_chunk_boundaries()
+    {
+        int[] lengths = [0, 1, 63, 64, 65, 1023, 1024, 1025, 2048, 4097, 16384];
+        int[] appendSizes = [1, 7, 64, 511, 1024, 4096];
+
+        foreach (int length in lengths)
+        {
+            byte[] input = Blake3TestVectors.GetTestInput(length);
+            byte[] expected = Blake3Hasher.Hash(input);
+
+            foreach (int appendSize in appendSizes)
+            {
+                using var incremental = new Blake3Hasher.Incremental();
+
+                for (var offset = 0; offset < input.Length; offset += appendSize)
+                    incremental.Append(input.AsSpan(offset, Math.Min(appendSize, input.Length - offset)));
+
+                incremental.FinalizeHash().Should().BeEquivalentTo(expected);
+            }
+        }
+    }
+
     private static byte[] GetInput()
     {
         var bytes = new byte[256];
