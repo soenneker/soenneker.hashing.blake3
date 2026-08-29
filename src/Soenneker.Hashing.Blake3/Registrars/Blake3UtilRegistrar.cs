@@ -16,6 +16,8 @@ public static class Blake3UtilRegistrar
     /// Registers <see cref="IBlake3Util"/> and <see cref="Blake3Util"/> as scoped.
     /// Requires <see cref="Soenneker.Utils.File.Abstract.IFileUtil"/> and <see cref="Soenneker.Utils.Directory.Abstract.IDirectoryUtil"/> to be registered.
     /// </summary>
+    /// <param name="services">Service collection that receives the registration.</param>
+    /// <returns>The same service collection, so additional registrations can be chained.</returns>
     public static IServiceCollection AddBlake3UtilAsScoped(this IServiceCollection services)
     {
         services.AddMemoryStreamUtilAsScoped().AddFileUtilAsScoped()
@@ -29,6 +31,8 @@ public static class Blake3UtilRegistrar
     /// Registers <see cref="IBlake3Util"/> and <see cref="Blake3Util"/> as singleton.
     /// Requires <see cref="Soenneker.Utils.File.Abstract.IFileUtil"/> and <see cref="Soenneker.Utils.Directory.Abstract.IDirectoryUtil"/> to be registered.
     /// </summary>
+    /// <param name="services">Service collection that receives the registration.</param>
+    /// <returns>The same service collection, so additional registrations can be chained.</returns>
     public static IServiceCollection AddBlake3UtilAsSingleton(this IServiceCollection services)
     {
         services.AddMemoryStreamUtilAsSingleton().AddFileUtilAsSingleton()

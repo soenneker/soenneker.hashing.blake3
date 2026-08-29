@@ -3,9 +3,7 @@ using Soenneker.Hashing.Blake3.Compress;
 using Soenneker.Hashing.Blake3.Constants;
 using System;
 using System.Buffers;
-
 namespace Soenneker.Hashing.Blake3;
-
 public static partial class Blake3Hasher
 {
     /// <summary>Incrementally computes a BLAKE3 digest without retaining the complete input.</summary>
@@ -18,7 +16,10 @@ public static partial class Blake3Hasher
         private ulong _completedChunks;
         private bool _finalized;
         private bool _disposed;
-
+        /// <summary>
+        /// Finalizes hash for the incremental.
+        /// </summary>
+        /// <param name="input">input to read or transform.</param>
         public void Append(ReadOnlySpan<byte> input)
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
@@ -38,6 +39,10 @@ public static partial class Blake3Hasher
             }
         }
 
+        /// <summary>
+        /// Finalizes hash for the Incremental.
+        /// </summary>
+        /// <returns>The resulting byte[].</returns>
         public byte[] FinalizeHash()
         {
             var result = new byte[Blake3Constants.OutLen];
@@ -45,6 +50,10 @@ public static partial class Blake3Hasher
             return result;
         }
 
+        /// <summary>
+        /// Finalizes hash for the Incremental.
+        /// </summary>
+        /// <param name="destination">destination that receives the result.</param>
         public void FinalizeHash(Span<byte> destination)
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
