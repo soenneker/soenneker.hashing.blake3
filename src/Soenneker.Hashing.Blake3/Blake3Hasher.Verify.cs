@@ -89,9 +89,19 @@ public static partial class Blake3Hasher
         if (expectedHashHex is null)
             throw new ArgumentNullException(nameof(expectedHashHex));
 
-        byte[] expected = Convert.FromHexString(expectedHashHex);
-        if (expected.Length != Blake3Constants.OutLen)
+        if (expectedHashHex.Length != Blake3Constants.OutLen * 2)
             return false;
+
+        byte[] expected;
+
+        try
+        {
+            expected = Convert.FromHexString(expectedHashHex);
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
 
         try
         {

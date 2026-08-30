@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -16,7 +17,6 @@ using Soenneker.Utils.MemoryStream.Abstract;
 
 namespace Soenneker.Hashing.Blake3;
 
-/// <inheritdoc cref="IBlake3Util"/>
 public sealed class Blake3Util : IBlake3Util
 {
     private readonly IFileUtil _fileUtil;
@@ -76,16 +76,9 @@ public sealed class Blake3Util : IBlake3Util
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            try
-            {
-                byte[] hash = await HashFileToByteArray(filePath, cancellationToken)
-                    .NoSync();
-                result[filePath] = hash;
-            }
-            catch (Exception)
-            {
-                // Skip files that cannot be read (e.g. access denied)
-            }
+            byte[] hash = await HashFileToByteArray(filePath, cancellationToken)
+                .NoSync();
+            result[filePath] = hash;
         }
 
         return result;
@@ -106,9 +99,6 @@ public sealed class Blake3Util : IBlake3Util
 
         files.Sort(StringComparer.Ordinal);
 
-        if (files.Count == 0)
-            return string.Empty;
-
         using var aggregateHasher = new Blake3Hasher.Incremental();
         byte[] readBuffer = ArrayPool<byte>.Shared.Rent(64 * 1024);
         var fileHash = new byte[32];
@@ -119,16 +109,9 @@ public sealed class Blake3Util : IBlake3Util
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                try
-                {
-                    await HashFile(filePath, fileHash, readBuffer, cancellationToken).NoSync();
-                    AppendUtf8(aggregateHasher, Path.GetRelativePath(path, filePath));
-                    aggregateHasher.Append(fileHash);
-                }
-                catch (Exception) when (!cancellationToken.IsCancellationRequested)
-                {
-                    // Skip files that cannot be read (e.g. access denied)
-                }
+                await HashFile(filePath, fileHash, readBuffer, cancellationToken).NoSync();
+                AppendLengthPrefixedUtf8(aggregateHasher, Path.GetRelativePath(path, filePath));
+                aggregateHasher.Append(fileHash);
             }
         }
         finally
@@ -157,9 +140,13 @@ public sealed class Blake3Util : IBlake3Util
         hasher.FinalizeHash(destination.Span);
     }
 
-    private static void AppendUtf8(Blake3Hasher.Incremental hasher, string value)
+    private static void AppendLengthPrefixedUtf8(Blake3Hasher.Incremental hasher, string value)
     {
         int byteCount = Encoding.UTF8.GetByteCount(value);
+        Span<byte> length = stackalloc byte[sizeof(int)];
+        BinaryPrimitives.WriteInt32LittleEndian(length, byteCount);
+        hasher.Append(length);
+
         byte[]? rented = null;
         Span<byte> bytes = byteCount <= 512
             ? stackalloc byte[byteCount]

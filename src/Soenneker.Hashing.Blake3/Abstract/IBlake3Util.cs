@@ -29,7 +29,7 @@ public interface IBlake3Util
     ValueTask<byte[]> HashFileToByteArray(string path, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Computes the BLAKE3 hash of each file in the directory (and optionally subdirectories) and returns a map of file path to digest bytes.
+    /// Computes the BLAKE3 hash of each file in the directory and its subdirectories.
     /// </summary>
     /// <param name="path">The full path to the directory.</param>
     /// <param name="cancellationToken">Optional cancellation token.</param>
@@ -39,7 +39,7 @@ public interface IBlake3Util
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Computes a single aggregate BLAKE3 hash of the directory by hashing each file (relative path + file hash) in sorted order and hashing the combined input. Returns the digest as a lowercase hex string.
+    /// Computes a deterministic directory digest from each sorted, length-prefixed relative path and its file-content digest.
     /// </summary>
     /// <param name="path">The full path to the directory.</param>
     /// <param name="cancellationToken">Optional cancellation token.</param>

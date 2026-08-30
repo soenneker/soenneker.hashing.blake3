@@ -141,6 +141,16 @@ public sealed class Blake3UtilTests : HostedUnitTest
         const string s = "test";
         string toString = Blake3Hasher.HashToString(s);
         toString.Should()
-                .NotBeNull();
+              .NotBeNull();
+    }
+
+    [Test]
+    public void Verify_malformed_hex_returns_false()
+    {
+        string malformed = new('z', 64);
+
+        bool result = Blake3Hasher.Verify("test", malformed);
+
+        result.Should().BeFalse();
     }
 }

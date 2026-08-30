@@ -1,5 +1,6 @@
 [![](https://img.shields.io/nuget/v/soenneker.hashing.blake3.svg?style=for-the-badge)](https://www.nuget.org/packages/soenneker.hashing.blake3/)
 [![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.hashing.blake3/publish-package.yml?style=for-the-badge)](https://github.com/soenneker/soenneker.hashing.blake3/actions/workflows/publish-package.yml)
+[![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.hashing.blake3/build-and-test.yml?style=for-the-badge&label=build)](https://github.com/soenneker/soenneker.hashing.blake3/actions/workflows/build-and-test.yml)
 [![](https://img.shields.io/nuget/dt/soenneker.hashing.blake3.svg?style=for-the-badge)](https://www.nuget.org/packages/soenneker.hashing.blake3/)
 [![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.hashing.blake3/codeql.yml?label=CodeQL&style=for-the-badge)](https://github.com/soenneker/soenneker.hashing.blake3/actions/workflows/codeql.yml)
 
@@ -10,7 +11,7 @@ A high-performance .NET library for **BLAKE3** hashing and constant-time verific
 ## Features
 
 - **BLAKE3** — 256-bit cryptographic hash; fast, secure, and specified in [the official BLAKE3 spec](https://github.com/BLAKE3-team/BLAKE3-specs).
-- **Zero dependencies** — only the .NET runtime; no native or third-party packages.
+- **Managed implementation** — no native BLAKE3 library deployment is required.
 - **SIMD** — uses AVX2 (x64) and NEON (ARM) when available for faster chunk hashing.
 - **Parallel hashing** — `HashParallel` for large inputs; multi-threaded with batched SIMD where applicable.
 - **Span/Memory-friendly** — hashing from `byte[]`, `ReadOnlySpan<byte>`, `ReadOnlyMemory<byte>`, and in-place digest writing.
@@ -55,7 +56,7 @@ bool ok = Blake3Hasher.Verify(data, hash);
 | `Hash(ReadOnlySpan<char> chars)` | Hash UTF-8 encoding of the character span. |
 | `HashToString(string input)` | Hash string (UTF-8) and return 64-character lowercase hex. |
 
-Single-chunk and multi-chunk inputs use a scalar path; no extra allocations for the common case.
+Single-chunk inputs use the scalar path; larger inputs use the available sequential SIMD implementation without extra output allocations.
 
 ### Parallel hashing (large inputs)
 
@@ -79,9 +80,9 @@ For file-based workflows, register `Blake3Util` (e.g. via `Blake3UtilRegistrar`)
 | `HashFile(path)` | Hash a file and return its BLAKE3 digest as a 64-character hex string. |
 | `HashFileToByteArray(path)` | Hash a file and return the 32-byte digest. |
 | `HashDirectory(path)` | Hash every file in a directory (recursive); returns a dictionary of file path → 32-byte digest. |
-| `HashDirectoryToAggregateString(path)` | Hash all files in a directory (sorted by path), combine path + hash per file, then BLAKE3 the aggregate; returns a single 64-character hex string for the whole directory. |
+| `HashDirectoryToAggregateString(path)` | Hash all files recursively, sort by path, and hash each length-prefixed relative path plus its content digest into one 64-character directory digest. |
 
-All methods are async and accept an optional `CancellationToken`. Files that cannot be read (e.g. access denied) are skipped when hashing directories.
+All file and directory methods are async and accept an optional `CancellationToken`. Missing directories, unreadable files, and cancellation are surfaced to the caller; files are never silently omitted from an integrity result. An empty directory returns the BLAKE3 digest of empty input.
 
 ### Verification
 
