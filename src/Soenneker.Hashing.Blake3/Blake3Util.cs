@@ -17,6 +17,7 @@ using Soenneker.Utils.MemoryStream.Abstract;
 
 namespace Soenneker.Hashing.Blake3;
 
+/// <inheritdoc cref="IBlake3Util" />
 public sealed class Blake3Util : IBlake3Util
 {
     private readonly IFileUtil _fileUtil;
