@@ -11,9 +11,7 @@ using Soenneker.Hashing.Blake3.Abstract;
 using Soenneker.Utils.Directory.Abstract;
 using Soenneker.Utils.File.Abstract;
 using Soenneker.Extensions.String;
-using Soenneker.Extensions.Task;
 using Soenneker.Extensions.ValueTask;
-using Soenneker.Utils.MemoryStream.Abstract;
 
 namespace Soenneker.Hashing.Blake3;
 
@@ -22,13 +20,11 @@ public sealed class Blake3Util : IBlake3Util
 {
     private readonly IFileUtil _fileUtil;
     private readonly IDirectoryUtil _directoryUtil;
-    private readonly IMemoryStreamUtil _memoryStreamUtil;
 
-    public Blake3Util(IFileUtil fileUtil, IDirectoryUtil directoryUtil, IMemoryStreamUtil memoryStreamUtil)
+    public Blake3Util(IFileUtil fileUtil, IDirectoryUtil directoryUtil)
     {
         _fileUtil = fileUtil;
         _directoryUtil = directoryUtil;
-        _memoryStreamUtil = memoryStreamUtil;
     }
 
     public async ValueTask<string> HashFile(string path, CancellationToken cancellationToken = default)
