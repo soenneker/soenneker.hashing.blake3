@@ -10,7 +10,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
 using System.Threading.Tasks;
-using Soenneker.Extensions.Arrays.Bytes;
 
 namespace Soenneker.Hashing.Blake3;
 
@@ -157,9 +156,9 @@ public static partial class Blake3Hasher
         if (input is null)
             throw new ArgumentNullException(nameof(input));
 
-        byte[] hash = Hash(input);
-
-        return hash.ToHexLower();
+        Span<byte> hash = stackalloc byte[Blake3Constants.OutLen];
+        HashChars(input.AsSpan(), hash);
+        return Convert.ToHexStringLower(hash);
     }
 
     /// <summary>
@@ -170,15 +169,21 @@ public static partial class Blake3Hasher
     [Pure]
     public static byte[] Hash(ReadOnlySpan<char> chars)
     {
-        int maxBytes = System.Text.Encoding.UTF8.GetMaxByteCount(chars.Length);
         var output = new byte[Blake3Constants.OutLen];
+        HashChars(chars, output);
+        return output;
+    }
+
+    private static void HashChars(ReadOnlySpan<char> chars, Span<byte> output)
+    {
+        int maxBytes = System.Text.Encoding.UTF8.GetMaxByteCount(chars.Length);
 
         if (maxBytes <= _parallelInputThreshold)
         {
             Span<byte> buf = stackalloc byte[maxBytes];
             int n = System.Text.Encoding.UTF8.GetBytes(chars, buf);
             Hash(buf[..n], output);
-            return output;
+            return;
         }
 
         byte[] rented = ArrayPool<byte>.Shared.Rent(maxBytes);
@@ -186,7 +191,7 @@ public static partial class Blake3Hasher
         {
             int n = System.Text.Encoding.UTF8.GetBytes(chars, rented);
             Hash(rented.AsSpan(0, n), output);
-            return output;
+            return;
         }
         finally
         {

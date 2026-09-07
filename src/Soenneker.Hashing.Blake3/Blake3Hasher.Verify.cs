@@ -1,5 +1,6 @@
 using Soenneker.Hashing.Blake3.Constants;
 using System;
+using System.Buffers;
 using System.Diagnostics.Contracts;
 using System.Security.Cryptography;
 
@@ -62,7 +63,8 @@ public static partial class Blake3Hasher
         if (expectedHash.Length != Blake3Constants.OutLen)
             return false;
 
-        byte[] computed = Hash(input);
+        Span<byte> computed = stackalloc byte[Blake3Constants.OutLen];
+        HashChars(input.AsSpan(), computed);
 
         try
         {
@@ -92,16 +94,9 @@ public static partial class Blake3Hasher
         if (expectedHashHex.Length != Blake3Constants.OutLen * 2)
             return false;
 
-        byte[] expected;
-
-        try
-        {
-            expected = Convert.FromHexString(expectedHashHex);
-        }
-        catch (FormatException)
-        {
+        Span<byte> expected = stackalloc byte[Blake3Constants.OutLen];
+        if (Convert.FromHexString(expectedHashHex, expected, out _, out _) != OperationStatus.Done)
             return false;
-        }
 
         try
         {
