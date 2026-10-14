@@ -18,12 +18,12 @@
 
     <ItemGroup>
         <PackageReference Include="Blake3" Version="3.0.2" />
-        <PackageReference Include="Blake3.Managed" Version="1.9.0" />
+        <PackageReference Include="Blake3.Managed" Version="1.10.0" />
         <PackageReference Include="SharpHash" Version="1.2.0" />
-        <PackageReference Include="Soenneker.Tests.Attributes.Local" Version="4.0.139" />
-        <PackageReference Include="Soenneker.Tests.Benchmark" Version="4.0.195" />
-        <PackageReference Include="Soenneker.Utils.Test" Version="4.0.334" />
-        <PackageReference Include="Soenneker.Tests.HostedUnit" Version="4.0.322" />
+        <PackageReference Include="Soenneker.Tests.Attributes.Local" Version="4.0.145" />
+        <PackageReference Include="Soenneker.Tests.Benchmark" Version="4.0.203" />
+        <PackageReference Include="Soenneker.Utils.Test" Version="4.0.340" />
+        <PackageReference Include="Soenneker.Tests.HostedUnit" Version="4.0.329" />
         <PackageReference Include="TUnit" Version="1.75.0" />
     </ItemGroup>
 
