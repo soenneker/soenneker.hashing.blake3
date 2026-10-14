@@ -20,10 +20,10 @@
         <PackageReference Include="Blake3" Version="3.0.2" />
         <PackageReference Include="Blake3.Managed" Version="1.10.0" />
         <PackageReference Include="SharpHash" Version="1.2.0" />
-        <PackageReference Include="Soenneker.Tests.Attributes.Local" Version="4.0.146" />
-        <PackageReference Include="Soenneker.Tests.Benchmark" Version="4.0.205" />
+        <PackageReference Include="Soenneker.Tests.Attributes.Local" Version="4.0.147" />
+        <PackageReference Include="Soenneker.Tests.Benchmark" Version="4.0.206" />
         <PackageReference Include="Soenneker.Utils.Test" Version="4.0.340" />
-        <PackageReference Include="Soenneker.Tests.HostedUnit" Version="4.0.330" />
+        <PackageReference Include="Soenneker.Tests.HostedUnit" Version="4.0.332" />
         <PackageReference Include="TUnit" Version="1.75.0" />
     </ItemGroup>
 
