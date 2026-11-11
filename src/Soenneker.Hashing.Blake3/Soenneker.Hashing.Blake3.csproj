@@ -40,7 +40,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Soenneker.Extensions.Arrays.Bytes" Version="11.0.80" />
+        <PackageReference Include="Soenneker.Extensions.Arrays.Bytes" Version="11.0.81" />
         <PackageReference Include="Soenneker.Utils.Directory" Version="11.0.973" />
         <PackageReference Include="Soenneker.Utils.File" Version="11.0.2334" />
     </ItemGroup>
