@@ -41,8 +41,8 @@
 
     <ItemGroup>
         <PackageReference Include="Soenneker.Extensions.Arrays.Bytes" Version="11.0.81" />
-        <PackageReference Include="Soenneker.Utils.Directory" Version="11.0.980" />
-        <PackageReference Include="Soenneker.Utils.File" Version="11.0.2342" />
+        <PackageReference Include="Soenneker.Utils.Directory" Version="11.0.981" />
+        <PackageReference Include="Soenneker.Utils.File" Version="11.0.2344" />
     </ItemGroup>
 
     <ItemGroup>
