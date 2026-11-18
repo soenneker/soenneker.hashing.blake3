@@ -51,6 +51,6 @@
         <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Soenneker.Extensions.ValueTask" Version="11.0.136" />
+        <PackageReference Include="Soenneker.Extensions.ValueTask" Version="11.0.137" />
     </ItemGroup>
 </Project>
